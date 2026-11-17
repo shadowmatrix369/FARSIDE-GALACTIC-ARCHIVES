@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Map & Lore Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        void: {
+                            950: '#05070d',
+                            900: '#0a0e1a',
+                            800: '#111729',
+                            700: '#1e2742'
+                        },
+                        cyber: {
+                            cyan: '#22d3ee',
+                            purple: '#a855f7',
+                            crimson: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #05070d; }
+        ::-webkit-scrollbar-thumb { background: #1e2742; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
+
+        /* Hero Banner Styling */
+        .hero-art {
+            background-image: linear-gradient(to bottom, rgba(5, 7, 13, 0.25) 0%, rgba(5, 7, 13, 0.85) 80%, #05070d 100%),
+                              url('DEAD%20REAPER%20YOUTUBE.jpg');
+            background-size: cover;
+            background-position: left center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body class="bg-void-950 text-gray-100 font-sans min-h-screen flex flex-col selection:bg-cyber-cyan selection:text-void-950">
+
+    <!-- Top Banner Header Featuring Your Page Art -->
+    <header class="hero-art border-b border-cyber-cyan/30 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 flex flex-col md:flex-row items-end md:items-center justify-between min-h-[260px]">
+            
+            <!-- Left Spacer so the Skull Art stays completely visible -->
+            <div class="hidden md:block md:w-5/12"></div>
+
+            <!-- Right Side Title & Navigation -->
+            <div class="w-full md:w-7/12 bg-void-950/70 backdrop-blur-md border border-cyber-cyan/25 rounded-xl p-6 shadow-2xl">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyber-crimson animate-ping"></span>
+                    <span class="text-xs font-mono uppercase tracking-widest text-cyber-cyan">Sector Telemetry Online</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white uppercase">
+                    Galactic Cartography <span class="text-cyber-cyan">&amp;</span> Lore
+                </h1>
+                <p class="text-sm text-gray-300 mt-1 mb-5">
+                    Select any sector cell or lore archive node below to access full telemetry, dock manifests, and historical records.
+                </p>
+
+                <!-- Topic Switcher Tabs -->
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="switchTopic('map')" id="tab-btn-map" class="px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-cyber-cyan text-void-950 shadow-[0_0_15px_rgba(34,211,238,0.4)] transition">
+                        Galactic Map &amp; Systems
+                    </button>
+                    <button onclick="switchTopic('lore')" id="tab-btn-lore" class="px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-void-800/90 text-gray-300 border border-void-700 hover:border-cyber-purple hover:text-white transition">
+                        Game Lore &amp; Factions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Workspace -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================================= -->
+        <!-- TOPIC AREA 1: GALACTIC MAP & ACCESSIBLE SYSTEM CELLS      -->
+        <!-- ========================================================= -->
+        <section id="topic-map" class="space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-void-700 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-cyber-cyan uppercase tracking-wider">Star System Sector Grid</h2>
+                    <p class="text-xs text-gray-400">Click any system cell to inspect docking bays, coordinates, and strategic resources.</p>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <select id="dockFilter" onchange="filterCells()" class="bg-void-800 border border-void-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyber-cyan">
+                        <option value="all">All Systems</option>
+                        <option value="has-dock">Docks Available</option>
+                        <option value="no-dock">No Docks (Deep Space)</option>
+                    </select>
+                    <input type="text" id="mapSearch" onkeyup="filterCells()" placeholder="Filter grid..." class="bg-void-800 border border-void-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyber-cyan w-full sm:w-52">
+                </div>
+            </div>
+
+            <!-- Interactive Grid Cells Container (Populated by JS) -->
+            <div id="systemsCellGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Cells injected dynamically -->
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TOPIC AREA 2: GAME LORE & ACCESSIBLE ARCHIVE CELLS        -->
+        <!-- ========================================================= -->
+        <section id="topic-lore" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-void-700 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-cyber-purple uppercase tracking-wider">Chronicles &amp; Faction Data Cells</h2>
+                    <p class="text-xs text-gray-400">Click any lore cell to decrypt full faction histories, ship logs, and conflict timelines.</p>
+                </div>
+                <input type="text" id="loreSearch" onkeyup="filterLoreCells()" placeholder="Search lore entries..." class="bg-void-800 border border-void-700 rounded-lg px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyber-purple w-full sm:w-64">
+            </div>
+
+            <!-- Interactive Lore Cells Container (Populated by JS) -->
+            <div id="loreCellGrid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Lore cells injected dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-void-700 bg-void-900/50 py-6 text-center text-xs text-gray-500 font-mono">
+        GALACTIC ARCHIVE TERMINAL // GITHUB PAGES DEPLOYMENT
+    </footer>
+
+    <!-- ========================================================= -->
+    <!-- ACCESSIBLE CELL DETAIL MODAL (OPENS WHEN CELL IS CLICKED) -->
+    <!-- ========================================================= -->
+    <div id="cellModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeModalOnBackdrop(event)">
+        <div class="bg-void-900 border border-cyber-cyan/50 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-[0_0_40px_rgba(34,211,238,0.2)] relative">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white bg-void-800 hover:bg-void-700 rounded-lg px-3 py-1 text-xs font-mono uppercase">
+                [ESC / Close]
+            </button>
+
+            <div id="modalTag" class="inline-block text-xs font-mono uppercase px-2.5 py-1 rounded mb-3"></div>
+            <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2"></h3>
+            <p id="modalSubtitle" class="text-xs font-mono text-gray-400 mb-5 pb-4 border-b border-void-700"></p>
+            
+            <!-- Dynamic Stats / Specs Table inside Modal -->
+            <div id="modalSpecs" class="grid grid-cols-2 gap-3 mb-5 text-sm"></div>
+
+            <!-- Detailed Description / Lore Body -->
+            <div id="modalBody" class="text-sm text-gray-300 leading-relaxed space-y-3 max-h-64 overflow-y-auto pr-2"></div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DATA & INTERACTIVITY SCRIPT                               -->
+    <!-- ========================================================= -->
+    <script>
+        // 1. STAR SYSTEMS DATA (Edit or add new systems here!)
+        const starSystems = [
+            {
+                id: "SYS-01",
+                name: "Zulu System",
+                coords: "SEC-01 // X: 142.8 Y: -88.4",
+                status: "Controlled",
+                statusColor: "cyan",
+                hasDock: true,
+                docks: ["Alpha Orbital (Capital)", "Port Horizon (Refit)"],
+                economy: "Industrial & Shipyards",
+                threat: "Low (Patrolled)",
+                summary: "Primary operational staging hub with full heavy-class docking and repair bays.",
+                details: "Zulu System serves as the primary anchorage for allied fleets. Both Alpha Orbital and Port Horizon offer full munitions restocking, hull integrity restoration, and market exchange terminals."
+            },
+            {
+                id: "SYS-02",
+                name: "Tygh Sector 4",
+                coords: "SEC-04 // X: 310.2 Y: 44.9",
+                status: "Frontier",
+                statusColor: "purple",
+                hasDock: true,
+                docks: ["Outpost Metalorum (Light/Med Only)"],
+                economy: "Deep-Core Mining",
+                threat: "Moderate (Pirate Raids)",
+                summary: "Rich asteroid belts with a single forward outpost restricted to medium hulls.",
+                details: "Heavy ore extraction takes place across the outer rings of Tygh Sector 4. Outpost Metalorum provides emergency refueling and ore processing, though capital-class vessels must anchor in high orbit."
+            },
+            {
+                id: "SYS-03",
+                name: "Grid Prime (10)",
+                coords: "SEC-10 // X: -512.0 Y: 209.1",
+                status: "Contested",
+                statusColor: "crimson",
+                hasDock: false,
+                docks: [],
+                economy: "Rare Blue/Purple Minerals",
+                threat: "Extreme (Lawless)",
+                summary: "Uncharted anomaly zone with zero docking infrastructure; deep-space transit only.",
+                details: "No permanent stations survive the gravitational shear in Grid Prime. Commanders entering this cell must carry self-sufficient repair drones and reserve fuel cells. High concentration of rare crystalline deposits."
+            },
+            {
+                id: "SYS-04",
+                name: "Valkyrie Rift",
+                coords: "SEC-07 // X: -190.4 Y: -315.7",
+                status: "Salvage Zone",
+                statusColor: "purple",
+                hasDock: true,
+                docks: ["Scrapyard Anchorage 9"],
+                economy: "Wreck Salvage & Black Market",
+                threat: "High",
+                summary: "Graveyard of derelict dreadnoughts with a single fortified scrapper dock.",
+                details: "Following the Third Sector Skirmish, Valkyrie Rift became the richest salvage field in the rim. Scrapyard Anchorage 9 buys recovered reactor cores and stripped hull plating with no questions asked."
+            },
+            {
+                id: "SYS-05",
+                name: "Obsidian Reach",
+                coords: "SEC-12 // X: 604.1 Y: -112.0",
+                status: "Dark Zone",
+                statusColor: "crimson",
+                hasDock: false,
+                docks: [],
+                economy: "Unknown / Dark Matter",
+                threat: "Critical",
+                summary: "Sensor-jamming nebula with no docks and frequent ambush signatures.",
+                details: "Long-range telemetry fails upon crossing the Obsidian boundary. Automated beacons indicate zero functional docks. Proceed only in coordinated squadrons."
+            },
+            {
+                id: "SYS-06",
+                name: "Aegis Bastion",
+                coords: "SEC-02 // X: 88.0 Y: 175.3",
+                status: "Fortified",
+                statusColor: "cyan",
+                hasDock: true,
+                docks: ["Citadel Dock A", "Citadel Dock B", "Drydock 4"],
+                economy: "Military & Defense",
+                threat: "Minimal",
+                summary: "Heavily shielded fortress system housing three orbital drydocks.",
+                details: "Aegis Bastion guards the core hyperlane junction. Automated defense platforms monitor all incoming jump vectors, making it the safest harbor for high-value cargo transfers."
+            }
+        ];
+
+        // 2. GAME LORE DATA (Edit or add new lore chapters here!)
+        const loreEntries = [
+            {
+                id: "LORE-01",
+                category: "Historical Record",
+                title: "The Reaper Protocol & The Outer Rim",
+                date: "Cycle 248.9",
+                summary: "Origins of the independent fleets operating beyond core corporate jurisdiction.",
+                content: "When the core conglomerates abandoned the outer mineral grids during the Collapse, autonomous commanders banded together under the Reaper banner. Operating out of hidden asteroid anchorages and mobile carrier groups, these crews forged their own code of salvage, territory control, and mutual defense across the lawless sectors."
+            },
+            {
+                id: "LORE-02",
+                category: "Faction Dossier",
+                title: "The Syndicate vs. Independent Vanguards",
+                date: "Cycle 251.2",
+                summary: "Ongoing cold war over rare crystalline mineral veins in Sector 10.",
+                content: "The Syndicate maintains strict blockades around high-yield refinery lanes, taxing independent haulers at every jump gate. In response, vanguard clans utilize stealth-fitted salvage rigs and rapid-strike corvettes to bypass toll stations and harvest deep-space anomalies directly."
+            },
+            {
+                id: "LORE-03",
+                category: "Technical Manual",
+                title: "Deep-Space Salvage & Hull Stripping",
+                date: "Field Directive 09",
+                summary: "Standard operating procedures for harvesting derelict combat vessels.",
+                content: "Every derelict hull left in contested space represents recoverable alloy, intact thrusters, and encrypted navigation cores. Salvage crews deploy cutting beams to sever structural ribs before tractoring high-value modules into cargo holds—always keeping sensors tuned for incoming raiders drawn by reactor signatures."
+            },
+            {
+                id: "LORE-04",
+                category: "Navigation Warning",
+                title: "Docking Classification & Pad Restrictions",
+                date: "Cartography Guild",
+                summary: "Understanding orbital station sizes before initiating hyper-jumps.",
+                content: "Not every star system supports heavy-tonnage vessels. Frontier outposts only possess external mooring clamps suitable for frigates and light freighters. Attempting to jump a capital hull into a no-dock sector without auxiliary fuel tenders risks permanent stranding."
+            }
+        ];
+
+        // Render Star System Cells
+        function renderSystemCells() {
+            const grid = document.getElementById('systemsCellGrid');
+            grid.innerHTML = starSystems.map((sys, index) => {
+                const badgeStyle = sys.statusColor === 'cyan' 
+                    ? 'bg-cyber-cyan/15 text-cyber-cyan border-cyber-cyan/30' 
+                    : sys.statusColor === 'purple'
+                    ? 'bg-cyber-purple/15 text-cyber-purple border-cyber-purple/30'
+                    : 'bg-cyber-crimson/15 text-cyber-crimson border-cyber-crimson/30';
+
+                const dockBadge = sys.hasDock
+                    ? `<span class="text-emerald-400 font-semibold">${sys.docks.length} Dock(s) Online</span>`
+                    : `<span class="text-cyber-crimson font-semibold">No Docks</span>`;
+
+                return `
+                <div onclick="openSystemModal(${index})" 
+                     data-dock="${sys.hasDock ? 'has-dock' : 'no-dock'}"
+                     class="system-cell group cursor-pointer bg-void-900/90 border border-void-700 hover:border-cyber-cyan rounded-xl p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-mono text-gray-500">${sys.id}</span>
+                            <span class="text-[11px] font-mono uppercase px-2 py-0.5 rounded border ${badgeStyle}">${sys.status}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-cyber-cyan transition">${sys.name}</h3>
+                        <p class="text-[11px] font-mono text-gray-400 mb-3">${sys.coords}</p>
+                        <p class="text-xs text-gray-300 mb-4 line-clamp-2">${sys.summary}</p>
+                    </div>
+                    <div class="pt-3 border-t border-void-700/80 flex items-center justify-between text-xs">
+                        <div>${dockBadge}</div>
+                        <span class="text-cyber-cyan font-mono group-hover:translate-x-1 transition-transform">Access Cell &rarr;</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Render Lore Cells
+        function renderLoreCells() {
+            const grid = document.getElementById('loreCellGrid');
+            grid.innerHTML = loreEntries.map((entry, index) => `
+                <div onclick="openLoreModal(${index})" 
+                     class="lore-cell group cursor-pointer bg-void-900/90 border border-void-700 hover:border-cyber-purple rounded-xl p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-mono text-cyber-purple uppercase">${entry.category}</span>
+                            <span class="text-xs font-mono text-gray-500">${entry.date}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white group-hover:text-cyber-purple transition mb-2">${entry.title}</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4">${entry.summary}</p>
+                    </div>
+                    <div class="pt-3 border-t border-void-700/80 flex items-center justify-between text-xs">
+                        <span class="font-mono text-gray-500">${entry.id}</span>
+                        <span class="text-cyber-purple font-mono group-hover:translate-x-1 transition-transform">Read Entry &rarr;</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open Modal for Star System Cell
+        function openSystemModal(index) {
+            const sys = starSystems[index];
+            const modal = document.getElementById('cellModal');
+            
+            document.getElementById('modalTag').className = "inline-block text-xs font-mono uppercase px-2.5 py-1 rounded mb-3 bg-cyber-cyan/15 text-cyber-cyan border border-cyber-cyan/30";
+            document.getElementById('modalTag').innerText = `${sys.id} // ${sys.status}`;
+            document.getElementById('modalTitle').innerText = sys.name;
+            document.getElementById('modalSubtitle').innerText = `Coordinates: ${sys.coords}`;
+
+            const dockList = sys.docks.length > 0 ? sys.docks.join(', ') : 'None (Deep Space Only)';
+            document.getElementById('modalSpecs').innerHTML = `
+                <div class="bg-void-800 p-3 rounded-lg border border-void-700">
+                    <div class="text-[11px] font-mono text-gray-400 uppercase">Docking Facilities</div>
+                    <div class="font-semibold text-white mt-0.5">${dockList}</div>
+                </div>
+                <div class="bg-void-800 p-3 rounded-lg border border-void-700">
+                    <div class="text-[11px] font-mono text-gray-400 uppercase">Primary Economy</div>
+                    <div class="font-semibold text-white mt-0.5">${sys.economy}</div>
+                </div>
+                <div class="bg-void-800 p-3 rounded-lg border border-void-700 col-span-2">
+                    <div class="text-[11px] font-mono text-gray-400 uppercase">Threat Assessment</div>
+                    <div class="font-semibold text-cyber-cyan mt-0.5">${sys.threat}</div>
+                </div>
+            `;
+
+            document.getElementById('modalBody').innerHTML = `<p>${sys.details}</p>`;
+            modal.classList.remove('hidden');
+        }
+
+        // Open Modal for Lore Cell
+        function openLoreModal(index) {
+            const entry = loreEntries[index];
+            const modal = document.getElementById('cellModal');
+
+            document.getElementById('modalTag').className = "inline-block text-xs font-mono uppercase px-2.5 py-1 rounded mb-3 bg-cyber-purple/15 text-cyber-purple border border-cyber-purple/30";
+            document.getElementById('modalTag').innerText = `${entry.id} // ${entry.category}`;
+            document.getElementById('modalTitle').innerText = entry.title;
+            document.getElementById('modalSubtitle').innerText = `Archive Timestamp: ${entry.date}`;
+            document.getElementById('modalSpecs').innerHTML = '';
+            document.getElementById('modalBody').innerHTML = `<p>${entry.content}</p>`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('cellModal').classList.add('hidden');
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target.id === 'cellModal') closeModal();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Switch Between Map & Lore Topic Areas
+        function switchTopic(topic) {
+            const mapSec = document.getElementById('topic-map');
+            const loreSec = document.getElementById('topic-lore');
+            const btnMap = document.getElementById('tab-btn-map');
+            const btnLore = document.getElementById('tab-btn-lore');
+
+            if (topic === 'map') {
+                mapSec.classList.remove('hidden');
+                loreSec.classList.add('hidden');
+                btnMap.className = "px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-cyber-cyan text-void-950 shadow-[0_0_15px_rgba(34,211,238,0.4)] transition";
+                btnLore.className = "px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-void-800/90 text-gray-300 border border-void-700 hover:border-cyber-purple hover:text-white transition";
+            } else {
+                mapSec.classList.add('hidden');
+                loreSec.classList.remove('hidden');
+                btnLore.className = "px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-cyber-purple text-white shadow-[0_0_15px_rgba(168,85,247,0.4)] transition";
+                btnMap.className = "px-5 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider bg-void-800/90 text-gray-300 border border-void-700 hover:border-cyber-cyan hover:text-white transition";
+            }
+        }
+
+        // Filter Star System Cells
+        function filterCells() {
+            const query = document.getElementById('mapSearch').value.toLowerCase();
+            const dockFilter = document.getElementById('dockFilter').value;
+            const cells = document.getElementsByClassName('system-cell');
+
+            for (let cell of cells) {
+                const text = cell.innerText.toLowerCase();
+                const dockStatus = cell.getAttribute('data-dock');
+                const matchesSearch = text.includes(query);
+                const matchesDock = dockFilter === 'all' || dockStatus === dockFilter;
+
+                cell.style.display = (matchesSearch && matchesDock) ? '' : 'none';
+            }
+        }
+
+        // Filter Lore Cells
+        function filterLoreCells() {
+            const query = document.getElementById('loreSearch').value.toLowerCase();
+            const cells = document.getElementsByClassName('lore-cell');
+
+            for (let cell of cells) {
+                cell.style.display = cell.innerText.toLowerCase().includes(query) ? '' : 'none';
+            }
+        }
+
+        // Initialize Cells on Page Load
+        renderSystemCells();
+        renderLoreCells();
+    </script>
+</body>
+</html>
